@@ -10,6 +10,7 @@ namespace BookStore.Core
         public double CalculateTotal(int howManyBooks)
         {
             if (howManyBooks < 0) throw new ArgumentException(ARGUMENT_EXCEPTION_MESSAGE);
+
             var discount = CalculateDiscountRate(howManyBooks);
             return (howManyBooks * UNIT_PRICE) - (discount * (howManyBooks * UNIT_PRICE));
         }
