@@ -5,9 +5,11 @@ namespace BookStore.Core
     public class TotalCalculator
     {
         private const int UNIT_PRICE = 42;
+        private const string ARGUMENT_EXCEPTION_MESSAGE = "This is not a valid number of books sold";
 
         public double CalculateTotal(int howManyBooks)
         {
+            if (howManyBooks < 0) throw new ArgumentException(ARGUMENT_EXCEPTION_MESSAGE);
             var discount = CalculateDiscountRate(howManyBooks);
             return (howManyBooks * UNIT_PRICE) - (discount * (howManyBooks * UNIT_PRICE));
         }

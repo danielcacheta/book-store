@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace BookStore.Core.Tests
 {
@@ -19,6 +20,13 @@ namespace BookStore.Core.Tests
 
             Assert.AreEqual(expectedTotal, result);
         }
-        
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void MustThrowExceptionForInvalidNumberOfBooks()
+        {
+            var sut = new TotalCalculator();
+            var result = sut.CalculateTotal(-1);
+        }
     }
 }
