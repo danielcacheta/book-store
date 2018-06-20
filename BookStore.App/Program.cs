@@ -1,5 +1,6 @@
 ﻿using BookStore.Core;
 using System;
+using System.Collections.Generic;
 
 namespace BookStore.App
 {
@@ -8,15 +9,37 @@ namespace BookStore.App
         private const string WELCOME_SCREEN = "W";
         private const string SELL_OPTION = "S";
         private const string EXIT_OPTION = "E";
+        private const string COMPLETE_SELL = "C";
+        private static IList<Book> cart;
+        private static Inventory inventory;
 
         static void Main(string[] args)
         {
+            PopulateInventory();
+
             var navigationOption = WELCOME_SCREEN;
             while (!navigationOption.Equals(EXIT_OPTION))
             {
                 navigationOption = GetNavigationOption();
                 if (navigationOption.Equals(SELL_OPTION))
                     SellBooks();
+            }
+        }
+
+        private static void PopulateInventory()
+        {
+            inventory = new Inventory
+            {
+                Books = new List<Book>()
+            };
+
+            for (int i = 0; i < 7; i++)
+            {
+                inventory.Books.Add(new Book
+                {
+                    Name = "Book " + (i + 1),
+                    Author = "Author " + (i + 1)
+                });
             }
         }
 
@@ -34,26 +57,71 @@ namespace BookStore.App
 
         private static void SellBooks()
         {
-            Console.WriteLine("How many books were sold?");
-            if (!int.TryParse(Console.ReadLine(), out int howManyBooks))
+            cart = new List<Book>();
+            ListAvailableBooks();
+
+            var sellingBookOption = WELCOME_SCREEN;
+            while (!sellingBookOption.Equals(COMPLETE_SELL))
             {
-                Console.WriteLine("Unable to sell the specified quantity");
-                return;
+                sellingBookOption = Console.ReadLine().ToUpper();
+                if (sellingBookOption.Equals(COMPLETE_SELL)) break;
+
+                if (!int.TryParse(sellingBookOption, out int selectedBookNumber)
+                    || SelectedBookDoesNotExist(selectedBookNumber))
+                {
+                    Console.WriteLine("Unable to sell the specified book");
+                    return;
+                }
+
+                AddBookToCart(inventory.Books[selectedBookNumber - 1]);
+                ListBooksAddedToCart();
             }
 
-            CalculateTotal(howManyBooks);
+            CalculateTotal(cart);
         }
 
-        private static void CalculateTotal(int howManyBooks)
+        private static void ListAvailableBooks()
         {
-            try
+            Console.Clear();
+            Console.WriteLine("Which books have been sold?");
+            Console.WriteLine("C - Completed, when you included all the books sold to this customer");
+
+            ListBooks(inventory.Books);
+        }
+
+        private static void ListBooksAddedToCart()
+        {
+            Console.Clear();
+            ListAvailableBooks();
+            Console.WriteLine();
+            Console.WriteLine("Books added to cart:");
+            ListBooks(cart);
+        }
+
+        private static void AddBookToCart(Book book)
+        {
+            cart.Add(book);
+        }
+
+        private static bool SelectedBookDoesNotExist(int selectedBookNumber)
+        {
+            return selectedBookNumber > inventory.Books.Count;
+        }
+
+        private static void CalculateTotal(IList<Book> cart)
+        {
+            Console.WriteLine(cart.Count + " Books. Total Value = " + "{0:C}", new TotalCalculator().CalculateTotal(cart));
+        }
+
+        private static void ListBooks(IList<Book> books)
+        {
+            var listId = 1;
+            foreach (var item in books)
             {
-                Console.WriteLine("Total Value = " + "{0:C}", new TotalCalculator().CalculateTotal(howManyBooks));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(listId + " - " + item.Name + " - " + item.Author);
+                listId++;
             }
         }
+
     }
 }
