@@ -1,4 +1,5 @@
 ﻿using BookStore.Core;
+using BookStore.Helpers;
 using System;
 using System.Collections.Generic;
 
@@ -28,6 +29,7 @@ namespace BookStore.App
 
         private static void PopulateInventory()
         {
+            var random = new Random();
             inventory = new Inventory
             {
                 Books = new List<Book>()
@@ -38,7 +40,8 @@ namespace BookStore.App
                 inventory.Books.Add(new Book
                 {
                     Name = "Book " + (i + 1),
-                    Author = "Author " + (i + 1)
+                    Author = "Author " + (i + 1),
+                    Category = (Category)random.Next(0,4)
                 });
             }
         }
@@ -118,7 +121,7 @@ namespace BookStore.App
             var listId = 1;
             foreach (var item in books)
             {
-                Console.WriteLine(listId + " - " + item.Name + " - " + item.Author);
+                Console.WriteLine(listId + " - " + item.Name + " - " + item.Author + " - " + item.Category);
                 listId++;
             }
         }
